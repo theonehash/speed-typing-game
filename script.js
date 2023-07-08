@@ -1,4 +1,4 @@
-const RANDOM_QUOTE_API_URL = 'http://api.quotable.io/random';
+const RANDOM_QUOTE_API_URL = 'https://api.quotable.io/random';
 const quoteDisplayElement = document.getElementById('quoteDisplay');
 const quoteInputElement = document.getElementById('quoteInput');
 const timerElement = document.getElementById('timer');
@@ -11,8 +11,7 @@ quoteInputElement.addEventListener('input', () => {
   arrayQuote.forEach((characterSpan, index) => {
     const character = arrayValue[index];
     if (character == null) {
-      characterSpan.classList.remove('correct');
-      characterSpan.classList.remove('incorrect');
+      characterSpan.classList.remove('correct', 'incorrect');
       correct = false;
     } else if (character === characterSpan.innerText) {
       characterSpan.classList.add('correct');
@@ -24,7 +23,9 @@ quoteInputElement.addEventListener('input', () => {
     }
   });
 
-  if (correct) renderNewQuote();
+  if (correct && arrayValue.length === arrayQuote.length) {
+    renderNewQuote();
+  }
 });
 
 function getRandomQuote() {
@@ -41,16 +42,19 @@ async function renderNewQuote() {
     characterSpan.innerText = character;
     quoteDisplayElement.appendChild(characterSpan);
   });
-  quoteInputElement.value = null;
+  quoteInputElement.value = '';
+  quoteInputElement.disabled = false;
+  quoteInputElement.focus();
   startTimer();
 }
 
 let startTime;
+let timerInterval;
 
 function startTimer() {
   timerElement.innerText = 0;
   startTime = new Date();
-  setInterval(() => {
+  timerInterval = setInterval(() => {
     timerElement.innerText = getTimerTime();
   }, 1000);
 }
