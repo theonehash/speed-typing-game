@@ -2,6 +2,7 @@ const RANDOM_QUOTE_API_URL = 'https://api.quotable.io/random';
 const quoteDisplayElement = document.getElementById('quoteDisplay');
 const quoteInputElement = document.getElementById('quoteInput');
 const timerElement = document.getElementById('timer');
+const goBackButton = document.getElementById('goBackButton');
 
 quoteInputElement.addEventListener('input', () => {
   const arrayQuote = quoteDisplayElement.querySelectorAll('span');
@@ -27,6 +28,7 @@ quoteInputElement.addEventListener('input', () => {
   if (correct && arrayValue.length === arrayQuote.length) {
     clearInterval(timerInterval);
     quoteInputElement.disabled = true;
+    goBackButton.disabled = false;
   }
 });
 
@@ -48,6 +50,7 @@ async function renderNewQuote() {
   quoteInputElement.disabled = false;
   quoteInputElement.focus();
   startTimer();
+  goBackButton.disabled = true;
 }
 
 let startTime;
@@ -65,4 +68,6 @@ function getTimerTime() {
   return Math.floor((new Date() - startTime) / 1000) + 's';
 }
 
-renderNewQuote();
+function goBack() {
+  window.history.back();
+}
