@@ -1,5 +1,5 @@
 body {
-  background-color: #f1f1f1;
+  background: linear-gradient(to right, violet, indigo, blue, green, yellow, orange, red);
   font-family: Arial, sans-serif;
 }
 
@@ -53,4 +53,3 @@ input:focus {
   color: #555;
   margin-top: 20px;
 }
-
