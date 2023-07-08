@@ -1,8 +1,7 @@
-const RANDOM_QUOTE_API_URL = 'https://api.quotable.io/random';
+const RANDOM_QUOTE_API_URL = 'http://api.quotable.io/random';
 const quoteDisplayElement = document.getElementById('quoteDisplay');
 const quoteInputElement = document.getElementById('quoteInput');
 const timerElement = document.getElementById('timer');
-const goBackButton = document.getElementById('goBackButton');
 
 quoteInputElement.addEventListener('input', () => {
   const arrayQuote = quoteDisplayElement.querySelectorAll('span');
@@ -25,11 +24,7 @@ quoteInputElement.addEventListener('input', () => {
     }
   });
 
-  if (correct && arrayValue.length === arrayQuote.length) {
-    clearInterval(timerInterval);
-    quoteInputElement.disabled = true;
-    goBackButton.disabled = false;
-  }
+  if (correct) renderNewQuote();
 });
 
 function getRandomQuote() {
@@ -47,27 +42,21 @@ async function renderNewQuote() {
     quoteDisplayElement.appendChild(characterSpan);
   });
   quoteInputElement.value = null;
-  quoteInputElement.disabled = false;
-  quoteInputElement.focus();
   startTimer();
-  goBackButton.disabled = true;
 }
 
 let startTime;
-let timerInterval;
 
 function startTimer() {
-  timerElement.innerText = '0s';
+  timerElement.innerText = 0;
   startTime = new Date();
-  timerInterval = setInterval(() => {
+  setInterval(() => {
     timerElement.innerText = getTimerTime();
   }, 1000);
 }
 
 function getTimerTime() {
-  return Math.floor((new Date() - startTime) / 1000) + 's';
+  return Math.floor((new Date() - startTime) / 1000);
 }
 
-function goBack() {
-  window.history.back();
-}
+renderNewQuote();
