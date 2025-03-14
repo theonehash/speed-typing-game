@@ -3,6 +3,8 @@ const quoteDisplayElement = document.getElementById('quoteDisplay');
 const quoteInputElement = document.getElementById('quoteInput');
 const timerElement = document.getElementById('timer');
 
+let timerInterval;
+
 quoteInputElement.addEventListener('input', () => {
   const arrayQuote = quoteDisplayElement.querySelectorAll('span');
   const arrayValue = quoteInputElement.value.split('');
@@ -11,8 +13,7 @@ quoteInputElement.addEventListener('input', () => {
   arrayQuote.forEach((characterSpan, index) => {
     const character = arrayValue[index];
     if (character == null) {
-      characterSpan.classList.remove('correct');
-      characterSpan.classList.remove('incorrect');
+      characterSpan.classList.remove('correct', 'incorrect');
       correct = false;
     } else if (character === characterSpan.innerText) {
       characterSpan.classList.add('correct');
@@ -27,6 +28,7 @@ quoteInputElement.addEventListener('input', () => {
   if (correct && arrayValue.length === arrayQuote.length) {
     clearInterval(timerInterval);
     quoteInputElement.disabled = true;
+    setTimeout(renderNewQuote, 2000); // Load a new quote after 2 seconds
   }
 });
 
@@ -44,25 +46,23 @@ async function renderNewQuote() {
     characterSpan.innerText = character;
     quoteDisplayElement.appendChild(characterSpan);
   });
-  quoteInputElement.value = null;
+
+  quoteInputElement.value = '';
   quoteInputElement.disabled = false;
   quoteInputElement.focus();
+  
   startTimer();
 }
 
-let startTime;
-let timerInterval;
-
 function startTimer() {
+  clearInterval(timerInterval); // Ensure previous timer stops
   timerElement.innerText = '0s';
-  startTime = new Date();
+  let startTime = new Date();
+  
   timerInterval = setInterval(() => {
-    timerElement.innerText = getTimerTime();
+    timerElement.innerText = Math.floor((new Date() - startTime) / 1000) + 's';
   }, 1000);
 }
 
-function getTimerTime() {
-  return Math.floor((new Date() - startTime) / 1000) + 's';
-}
-
 renderNewQuote();
+
