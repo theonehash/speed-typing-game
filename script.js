@@ -1,68 +1,55 @@
-const RANDOM_QUOTE_API_URL = 'https://api.quotable.io/random';
-const quoteDisplayElement = document.getElementById('quoteDisplay');
-const quoteInputElement = document.getElementById('quoteInput');
-const timerElement = document.getElementById('timer');
-
+// script.js
+const sentences = [
+  "The quick brown fox jumps over the lazy dog.",
+  "Typing fast requires practice and patience.",
+  "JavaScript makes web pages interactive and fun.",
+  "Coding is like solving a puzzle with logic."
+];
+let startTime;
 let timerInterval;
+const sentenceElement = document.getElementById("sentence");
+const inputElement = document.getElementById("input-text");
+const timerElement = document.getElementById("timer");
 
-quoteInputElement.addEventListener('input', () => {
-  const arrayQuote = quoteDisplayElement.querySelectorAll('span');
-  const arrayValue = quoteInputElement.value.split('');
+function startGame() {
+  const randomIndex = Math.floor(Math.random() * sentences.length);
+  sentenceElement.textContent = sentences[randomIndex];
+  inputElement.value = "";
+  inputElement.focus();
+  inputElement.classList.remove("error");
+  startTime = null;
+  timerElement.textContent = "Time: 0s";
+  clearInterval(timerInterval);
+  inputElement.addEventListener("input", checkTyping);
+}
 
-  let correct = true;
-  arrayQuote.forEach((characterSpan, index) => {
-    const character = arrayValue[index];
-    if (character == null) {
-      characterSpan.classList.remove('correct', 'incorrect');
-      correct = false;
-    } else if (character === characterSpan.innerText) {
-      characterSpan.classList.add('correct');
-      characterSpan.classList.remove('incorrect');
-    } else {
-      characterSpan.classList.remove('correct');
-      characterSpan.classList.add('incorrect');
-      correct = false;
-    }
-  });
-
-  if (correct && arrayValue.length === arrayQuote.length) {
-    clearInterval(timerInterval);
-    quoteInputElement.disabled = true;
-    setTimeout(renderNewQuote, 2000); // Load a new quote after 2 seconds
+function checkTyping() {
+  if (!startTime) {
+      startTime = new Date();
+      timerInterval = setInterval(updateTimer, 100);
   }
-});
-
-function getRandomQuote() {
-  return fetch(RANDOM_QUOTE_API_URL)
-    .then(response => response.json())
-    .then(data => data.content);
-}
-
-async function renderNewQuote() {
-  const quote = await getRandomQuote();
-  quoteDisplayElement.innerHTML = '';
-  quote.split('').forEach(character => {
-    const characterSpan = document.createElement('span');
-    characterSpan.innerText = character;
-    quoteDisplayElement.appendChild(characterSpan);
-  });
-
-  quoteInputElement.value = '';
-  quoteInputElement.disabled = false;
-  quoteInputElement.focus();
+  const expectedText = sentenceElement.textContent;
+  const userText = inputElement.value;
   
-  startTimer();
-}
-
-function startTimer() {
-  clearInterval(timerInterval); // Ensure previous timer stops
-  timerElement.innerText = '0s';
-  let startTime = new Date();
+  if (expectedText.startsWith(userText)) {
+      inputElement.classList.remove("error");
+  } else {
+      inputElement.classList.add("error");
+  }
   
-  timerInterval = setInterval(() => {
-    timerElement.innerText = Math.floor((new Date() - startTime) / 1000) + 's';
-  }, 1000);
+  if (userText === expectedText) {
+      clearInterval(timerInterval);
+      alert("Well done! You finished in " + timerElement.textContent);
+  }
 }
 
-renderNewQuote();
+function updateTimer() {
+  const elapsedTime = ((new Date() - startTime) / 1000).toFixed(1);
+  timerElement.textContent = "Time: " + elapsedTime + "s";
+}
 
+function restartGame() {
+  startGame();
+}
+
+startGame();
